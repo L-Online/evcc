@@ -147,7 +147,7 @@ func (s *SEMP) callbackURI() string {
 	}
 
 	ip := "localhost"
-	ips := LocalIPs()
+	ips := util.LocalIPs()
 	if len(ips) > 0 {
 		ip = ips[0].String()
 	} else {
