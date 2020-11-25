@@ -9,7 +9,7 @@ IMAGE := andig/evcc
 ALPINE := 3.12
 TARGETS := arm.v6,arm.v8,amd64
 
-default: clean install ui assets lint test build
+default: clean install assets lint test build
 
 clean:
 	rm -rf dist/
@@ -17,6 +17,7 @@ clean:
 install:
 	go install github.com/mjibson/esc
 	go install github.com/golang/mock/mockgen
+	npm ci
 
 lint:
 	golangci-lint run
@@ -26,12 +27,12 @@ test:
 	go test ./...
 
 ui:
-	npm ci
 	npm run build
 	go generate main.go
 
 assets:
 	@echo "Generating embedded assets"
+	npm run build
 	go generate ./...
 
 build:
