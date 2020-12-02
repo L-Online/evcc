@@ -58,7 +58,10 @@ func NewModbusFromConfig(other map[string]interface{}) (api.Meter, error) {
 	conn.Logger(log.TRACE)
 
 	// prepare device
-	device, err := modbus.NewDevice(cc.Model, cc.SubDevice, *cc.RTU)
+	var device meters.Device
+	if err == nil {
+		device, err = modbus.NewDevice(cc.Model, cc.SubDevice, *cc.RTU)
+	}
 
 	if err == nil {
 		err = device.Initialize(conn)

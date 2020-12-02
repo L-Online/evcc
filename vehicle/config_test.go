@@ -15,8 +15,6 @@ func TestVehicles(t *testing.T) {
 		"unexpected length",
 		"i/o timeout",
 		"Missing required parameter", // Renault
-		"error connecting: Network Error",
-		"unexpected status: 401",
 	}
 
 	for _, tmpl := range test.ConfigTemplates("vehicle") {

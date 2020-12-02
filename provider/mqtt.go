@@ -12,10 +12,7 @@ import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
-const (
-	connectTimeout = 2 * time.Second
-	publishTimeout = 2 * time.Second
-)
+const publishTimeout = 2 * time.Second
 
 // MqttClientID created unique mqtt client id
 func MqttClientID() string {
@@ -43,13 +40,14 @@ type MqttClient struct {
 
 // NewMqttClient creates new publisher for paho
 func NewMqttClient(
-	log *util.Logger,
 	broker string,
 	user string,
 	password string,
 	clientID string,
 	qos byte,
-) (*MqttClient, error) {
+) *MqttClient {
+	log := util.NewLogger("mqtt")
+
 	broker = util.DefaultPort(broker, 1883)
 	log.INFO.Printf("connecting %s at %s", clientID, broker)
 
@@ -69,15 +67,14 @@ func NewMqttClient(
 	options.SetAutoReconnect(true)
 	options.SetOnConnectHandler(mc.ConnectionHandler)
 	options.SetConnectionLostHandler(mc.ConnectionLostHandler)
-	options.SetConnectTimeout(connectTimeout)
 
 	client := mqtt.NewClient(options)
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
-		return nil, fmt.Errorf("error connecting: %w", token.Error())
+		log.FATAL.Fatalf("error connecting: %s", token.Error())
 	}
 
 	mc.Client = client
-	return mc, nil
+	return mc
 }
 
 // ConnectionLostHandler logs cause of connection loss as warning

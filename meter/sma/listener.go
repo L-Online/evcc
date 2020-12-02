@@ -19,8 +19,8 @@ const (
 	msgPreamble   = 28 // preamble size in bytes
 	msgCodeLength = 4  // length in bytes
 
-	// Any subscriber receives all messages
-	Any = "<any>"
+	// All subscriber receives all messages
+	All = "<all>"
 )
 
 // Obis defines an Obis code as understood my the EMETER protocol
@@ -203,11 +203,11 @@ func (l *Listener) send(msg Telegram) {
 	defer l.mux.Unlock()
 
 	for identifier, client := range l.clients {
-		if identifier == msg.Addr || identifier == msg.Serial || identifier == Any {
+		if identifier == msg.Addr || identifier == msg.Serial || identifier == All {
 			select {
 			case client <- msg:
 			default:
-				l.log.TRACE.Println("recv: listener blocked")
+				l.log.TRACE.Println("listener: recv blocked")
 			}
 			break
 		}

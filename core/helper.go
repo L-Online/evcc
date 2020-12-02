@@ -1,6 +1,8 @@
 package core
 
 import (
+	"math"
+
 	"github.com/avast/retry-go"
 )
 
@@ -16,8 +18,8 @@ var (
 )
 
 // powerToCurrent is a helper function to convert power to per-phase current
-func powerToCurrent(power float64, phases int64) float64 {
-	return power / (float64(phases) * Voltage)
+func powerToCurrent(power float64, phases int64) int64 {
+	return int64(math.Floor(power / (float64(phases) * Voltage)))
 }
 
 // consumedPower estimates how much power the charger might have consumed given it was the only load

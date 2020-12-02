@@ -65,11 +65,6 @@ type Charger interface {
 	MaxCurrent(current int64) error
 }
 
-// ChargerEx provides milli-amp precision charger current control
-type ChargerEx interface {
-	MaxCurrentMillis(current float64) error
-}
-
 // Diagnosis is a helper interface that allows to dump diagnostic data to console
 type Diagnosis interface {
 	Diagnosis()
@@ -100,11 +95,6 @@ type ChargeFinishTimer interface {
 // VehicleStatus provides the vehicles current charging status
 type VehicleStatus interface {
 	Status() (ChargeStatus, error)
-}
-
-// VehicleRange provides the vehicles remaining km range
-type VehicleRange interface {
-	Range() (int64, error)
 }
 
 // Climater provides climatisation data
