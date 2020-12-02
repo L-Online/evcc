@@ -47,13 +47,19 @@ func configureDatabase(conf server.InfluxConfig, loadPoints []core.LoadPointAPI,
 
 // setup mqtt
 func configureMQTT(conf provider.MqttConfig) {
+	log := util.NewLogger("mqtt")
 	clientID := provider.MqttClientID()
-	provider.MQTT = provider.NewMqttClient(conf.Broker, conf.User, conf.Password, clientID, 1)
+
+	var err error
+	provider.MQTT, err = provider.NewMqttClient(log, conf.Broker, conf.User, conf.Password, clientID, 1)
+	if err != nil {
+		log.FATAL.Fatalf("failed configuring hems: %v", err)
+	}
 }
 
 // setup HEMS
-func configureHEMS(conf string, site *core.Site, cache *util.Cache, httpd *server.HTTPd) hems.HEMS {
-	hems, err := hems.NewFromConfig(conf, site, cache, httpd)
+func configureHEMS(conf typedConfig, site *core.Site, cache *util.Cache, httpd *server.HTTPd) hems.HEMS {
+	hems, err := hems.NewFromConfig(conf.Type, conf.Other, site, cache, httpd)
 	if err != nil {
 		log.FATAL.Fatalf("failed configuring hems: %v", err)
 	}
