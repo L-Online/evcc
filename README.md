@@ -6,7 +6,7 @@
 
 [![Build Status](https://github.com/andig/evcc/workflows/Build/badge.svg)](https://github.com/andig/evcc/actions?query=workflow%3ABuild)
 [![Code Quality](https://goreportcard.com/badge/github.com/andig/evcc)](https://goreportcard.com/report/github.com/andig/evcc)
-[![Latest Version](https://img.shields.io/github/tag/andig/evcc.svg)](https://github.com/andig/evcc/releases)
+[![Latest Version](https://img.shields.io/github/release/andig/evcc.svg)](https://github.com/andig/evcc/releases)
 [![Pulls from Docker Hub](https://img.shields.io/docker/pulls/andig/evcc.svg)](https://hub.docker.com/r/andig/evcc)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=48YVXXA7BDNC2)
 
@@ -76,7 +76,7 @@ Use the following `systemd` unit description to configure EVCC as service (put i
 
     [Unit]
     Description=evcc
-    After=syslog.target
+    After=syslog.target network.target
     [Service]
     ExecStart=/usr/local/bin/evcc --log error
     Restart=always
@@ -156,7 +156,7 @@ In general, due to the minimum value of 5% for signalling the EV duty cycle, the
 Charger is responsible for handling EV state and adjusting charge current. Available charger implementations are:
 
 - `evsewifi`: chargers with SimpleEVSE controllers using [EVSE-WiFi](https://www.evse-wifi.de/)
-- `go-e`: go-eCharger chargers (both local and cloud API are supported)
+- `go-e`: go-eCharger chargers (both local and cloud API are supported, at least firmware 040.0 required)
 - `keba`: KEBA KeContact P20/P30 and BMW chargers (see [Preparation](#keba-preparation))
 - `mcc`: Mobile Charger Connect devices (Audi, Bentley, Porsche)
 - `openWB`: openWB chargers using openWB's MQTT interface

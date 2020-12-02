@@ -34,7 +34,7 @@ jobs:
       run: make install
 
     - name: Assets & UI
-      run: make assets
+      run: make npm assets
 
     - name: Porcelain
       run: |
@@ -43,6 +43,11 @@ jobs:
 
     - name: Build
       run: make build
+
+    - name: Lint
+      uses: golangci/golangci-lint-action@v2
+      with:
+        version: v1.33
 
     - name: Test
       run: make test
@@ -90,7 +95,7 @@ jobs:
       run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
 
     - name: Publish
-      run: make publish-release
+      run: make publish-images
 
     - name: Release
       uses: goreleaser/goreleaser-action@v2
