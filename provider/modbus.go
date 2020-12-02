@@ -63,28 +63,12 @@ func NewModbusFromConfig(other map[string]interface{}) (*Modbus, error) {
 		cc.Value = "Power"
 	}
 
-	// model + value configured
-	if cc.Value != "" {
-		cc.Value = modbus.ReadingName(cc.Value)
-		if err := modbus.ParseOperation(device, cc.Value, &op); err != nil {
-			return nil, fmt.Errorf("invalid value %s", cc.Value)
-		}
-
-		// if sunspec reading configured make sure model is defined or device won't be initialized
-		if op.SunSpec.Point != "" && cc.Model == "" {
-			cc.Model = "SunSpec"
-		}
+	if cc.Model == "" && cc.Value != "" {
+		return nil, errors.New("need device model when value configured")
 	}
 
-	// register configured
-	if cc.Register.Decode != "" {
-		if op.MBMD, err = modbus.RegisterOperation(cc.Register); err != nil {
-			return nil, err
-		}
-	}
-
-	// model configured
-	if cc.Model != "" {
+	// no registered configured - need device
+	if cc.Register.Decode == "" {
 		device, err = modbus.NewDevice(cc.Model, cc.SubDevice, *cc.RTU)
 
 		// prepare device
@@ -96,10 +80,25 @@ func NewModbusFromConfig(other map[string]interface{}) (*Modbus, error) {
 				err = nil
 			}
 		}
+
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	if err != nil {
-		return nil, err
+	// model + value configured
+	if cc.Value != "" {
+		cc.Value = modbus.ReadingName(cc.Value)
+		if err := modbus.ParseOperation(device, cc.Value, &op); err != nil {
+			return nil, fmt.Errorf("invalid value %s", cc.Value)
+		}
+	}
+
+	// register configured
+	if cc.Register.Decode != "" {
+		if op.MBMD, err = modbus.RegisterOperation(cc.Register); err != nil {
+			return nil, err
+		}
 	}
 
 	mb := &Modbus{
@@ -158,7 +157,11 @@ func (m *Modbus) FloatGetter() (float64, error) {
 	}
 
 	if err == nil {
-		m.log.TRACE.Printf("%+v", res)
+		if m.op.MBMD.IEC61850 != 0 {
+			m.log.TRACE.Printf("%s: %v", m.op.MBMD.IEC61850, res.Value)
+		} else {
+			m.log.TRACE.Printf("%d:%d:%s: %v", m.op.SunSpec.Model, m.op.SunSpec.Block, m.op.SunSpec.Point, res.Value)
+		}
 	}
 
 	return m.scale * res.Value, err
