@@ -42,21 +42,10 @@ type ChargerResponse struct {
 				RemainingChargingTime TimedInt
 			}
 			ChargingStatusData struct {
-				ChargingState            TimedString // off, charging
-				ChargingMode             TimedString // invalid, AC
-				ChargingReason           TimedString // invalid, immediate
-				ExternalPowerSupplyState TimedString // unavailable, available
-				EnergyFlow               TimedString // on, off
+				ChargingState TimedString
 			}
 			PlugStatusData struct {
-				PlugState TimedString // connected
-			}
-			CruisingRangeStatusData struct {
-				EngineTypeFirstEngine  TimedString // typeIsElectric, petrolGasoline
-				EngineTypeSecondEngine TimedString // typeIsElectric, petrolGasoline
-				PrimaryEngineRange     TimedInt
-				SecondaryEngineRange   TimedInt
-				HybridRange            TimedInt
+				PlugState TimedString
 			}
 		}
 	}

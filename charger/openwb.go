@@ -39,13 +39,8 @@ func NewOpenWBFromConfig(other map[string]interface{}) (api.Charger, error) {
 		return nil, err
 	}
 
-	log := util.NewLogger("openwb")
-
 	clientID := provider.MqttClientID()
-	client, err := provider.NewMqttClient(log, cc.Broker, cc.User, cc.Password, clientID, 1)
-	if err != nil {
-		return nil, err
-	}
+	client := provider.NewMqttClient(cc.Broker, cc.User, cc.Password, clientID, 1)
 
 	// check if loadpoint configured
 	configured := client.BoolGetter(fmt.Sprintf("%s/lp/%d/%s", cc.Topic, cc.ID, openwb.ConfiguredTopic), cc.Timeout)
