@@ -3,16 +3,22 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "rimraf dist; parcel watch assets/* --public-url ./dist/",
-    "build": "rimraf dist; parcel build assets/* --public-url ./dist/",
+    "dev": "vue-cli-service build --watch --mode=development",
+    "build": "vue-cli-service build",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "prettier assets --write && eslint assets/**/*.js assets/**/*.vue --fix",
-    "fix-audit": "npm-force-resolutions"
+    "storybook": "start-storybook -p 6006 -s assets,node_modules/bootstrap/dist",
+    "build-storybook": "build-storybook"
   },
-  "author": "",
+  "author": "naltatis & andig",
   "license": "MIT",
   "devDependencies": {
+    "@storybook/addon-actions": "^6.1.10",
+    "@storybook/addon-essentials": "^6.1.10",
+    "@storybook/addon-links": "^6.1.10",
+    "@storybook/vue": "^6.1.10",
     "@vue/component-compiler-utils": "^3.2.0",
+    "@vue/cli-service": "^4.5.9",
     "@vue/eslint-config-standard": "^5.1.2",
     "eslint": "^7.14.0",
     "eslint-config-prettier": "^6.15.0",
@@ -22,12 +28,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.1.0",
     "eslint-plugin-vue": "^7.1.0",
-    "husky": "^4.3.0",
-    "lint-staged": "^10.5.1",
-    "npm-force-resolutions": "0.0.3",
-    "parcel-bundler": "^1.12.4",
     "prettier": "^2.2.0",
-    "rimraf": "^3.0.2",
     "vue-template-compiler": "^2.6.12"
   },
   "engines": {
@@ -39,7 +40,6 @@
   },
   "repository": "github:andig/evcc",
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.1",
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@fortawesome/vue-fontawesome": "^2.0.0",
@@ -53,18 +53,5 @@
   },
   "resolutions": {
     "node-forge": "0.10.0"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "assets/**/*.{js,vue,json}": [
-      "eslint --fix"
-    ],
-    "assets/**/*.{html,js,vue,json,css}": [
-      "prettier --write"
-    ]
   }
 }

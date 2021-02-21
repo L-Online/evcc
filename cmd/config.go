@@ -7,7 +7,7 @@ import (
 	"github.com/andig/evcc/api"
 	"github.com/andig/evcc/charger"
 	"github.com/andig/evcc/meter"
-	"github.com/andig/evcc/provider"
+	"github.com/andig/evcc/provider/mqtt"
 	"github.com/andig/evcc/push"
 	"github.com/andig/evcc/server"
 	"github.com/andig/evcc/vehicle"
@@ -16,9 +16,12 @@ import (
 type config struct {
 	URI        string
 	Log        string
+	Metrics    bool
+	Profile    bool
 	Levels     map[string]string
 	Interval   time.Duration
-	Mqtt       provider.MqttConfig
+	Mqtt       mqttConfig
+	Javascript map[string]interface{}
 	Influx     server.InfluxConfig
 	HEMS       typedConfig
 	Messaging  messagingConfig
@@ -27,6 +30,11 @@ type config struct {
 	Vehicles   []qualifiedConfig
 	Site       map[string]interface{}
 	LoadPoints []map[string]interface{}
+}
+
+type mqttConfig struct {
+	mqtt.Config `mapstructure:",squash"`
+	Topic       string
 }
 
 type qualifiedConfig struct {
@@ -144,13 +152,4 @@ func (cp *ConfigProvider) configureVehicles(conf config) error {
 	}
 
 	return nil
-}
-
-// Close performs cleanup activities on all entities maintained by the config provider
-func (cp *ConfigProvider) Close() {
-	for _, o := range cp.vehicles {
-		if c, ok := o.(api.Closer); ok {
-			c.Close()
-		}
-	}
 }

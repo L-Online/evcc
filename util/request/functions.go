@@ -14,7 +14,10 @@ var (
 	URLEncoding = map[string]string{"Content-Type": "application/x-www-form-urlencoded"}
 
 	// JSONEncoding specifies application/json
-	JSONEncoding = map[string]string{"Content-Type": "application/json"}
+	JSONEncoding = map[string]string{
+		"Content-Type": "application/json",
+		"Accept":       "application/json",
+	}
 )
 
 // StatusError indicates unsuccessful http response
@@ -51,7 +54,7 @@ func (e StatusError) HasStatus(codes ...int) bool {
 	return false
 }
 
-// ReadBody reads HTTP response and returns error on response codes other than HTTP 2xx
+// ReadBody reads HTTP response and returns error on response codes other than HTTP 2xx. It closes the request body after reading.
 func ReadBody(resp *http.Response) ([]byte, error) {
 	defer resp.Body.Close()
 
@@ -72,12 +75,11 @@ func ReadBody(resp *http.Response) ([]byte, error) {
 
 // DecodeJSON reads HTTP response and decodes JSON body if error is nil
 func DecodeJSON(resp *http.Response, res interface{}) error {
-	b, err := ReadBody(resp)
-	if err == nil {
-		err = json.Unmarshal(b, &res)
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return StatusError{resp: resp}
 	}
 
-	return err
+	return json.NewDecoder(resp.Body).Decode(&res)
 }
 
 // New builds and executes HTTP request and returns the response
@@ -91,5 +93,5 @@ func New(method, uri string, data io.Reader, headers ...map[string]string) (*htt
 		}
 	}
 
-	return req, nil
+	return req, err
 }

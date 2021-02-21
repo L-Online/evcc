@@ -47,7 +47,9 @@ func NewConfigurableFromConfig(other map[string]interface{}) (api.Vehicle, error
 		Status   *provider.Config
 		Range    *provider.Config
 		Cache    time.Duration
-	}{}
+	}{
+		Cache: interval,
+	}
 
 	if err := util.DecodeOther(other, &cc); err != nil {
 		return nil, err
@@ -61,7 +63,7 @@ func NewConfigurableFromConfig(other map[string]interface{}) (api.Vehicle, error
 
 	getter, err := provider.NewFloatGetterFromConfig(cc.Charge)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("charge: %w", err)
 	}
 
 	if cc.Cache > 0 {
@@ -78,7 +80,7 @@ func NewConfigurableFromConfig(other map[string]interface{}) (api.Vehicle, error
 	if cc.Status != nil {
 		v.statusG, err = provider.NewStringGetterFromConfig(*cc.Status)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("status: %w", err)
 		}
 		status = v.status
 	}
@@ -88,7 +90,7 @@ func NewConfigurableFromConfig(other map[string]interface{}) (api.Vehicle, error
 	if cc.Range != nil {
 		v.rangeG, err = provider.NewIntGetterFromConfig(*cc.Range)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("range: %w", err)
 		}
 		rng = v.rng
 	}
@@ -98,12 +100,12 @@ func NewConfigurableFromConfig(other map[string]interface{}) (api.Vehicle, error
 	return res, nil
 }
 
-// ChargeState implements the Vehicle.ChargeState interface
-func (m *Vehicle) ChargeState() (float64, error) {
+// SoC implements the api.Vehicle interface
+func (m *Vehicle) SoC() (float64, error) {
 	return m.chargeG()
 }
 
-// ChargeState implements the Vehicle.ChargeState interface
+// SoC implements the api.Vehicle interface
 func (m *Vehicle) status() (api.ChargeStatus, error) {
 	status := api.StatusF
 
@@ -115,7 +117,7 @@ func (m *Vehicle) status() (api.ChargeStatus, error) {
 	return status, err
 }
 
-// rng implements the Vehicle.Range interface
+// rng implements the api.VehicleRange interface
 func (m *Vehicle) rng() (int64, error) {
 	return m.rangeG()
 }
